@@ -18,9 +18,8 @@ export default {
   methods: {
     addTodo: function() {
       if (this.newTodoItem !== "") {
-        let obj = { completed: false, item: this.newTodoItem };
-        // 저장하는 로직
-        localStorage.setItem(this.newTodoItem, JSON.stringify(obj));
+        // this.$emit('이벤트 이름', 인자1, 인자2, ...);
+        this.$emit("addTodoItem", this.newTodoItem);
         this.clearInput();
       }
     },
