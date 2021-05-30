@@ -1,31 +1,46 @@
 <template>
   <div>
-    <ul>
-      <li v-for="(todoItem, index) in prosdata" v-bind:key="todoItem" class="shadow">
+    <transition-group name="list" tag="ul">
+      <li
+        v-for="(todoItem, index) in this.storedTodoItems"
+        v-bind:key="todoItem.item"
+        class="shadow"
+      >
         <i
           class="checkBtn fas fa-check"
           v-bind:class="{checkBtnCompleted : todoItem.completed}"
           v-on:click="toggleComplete(todoItem, index)"
         ></i>
         <span v-bind:class="{textCompleted : todoItem.completed}">{{todoItem.item}}</span>
-        <span class="removeBtn" v-on:click="removeTodo(todoItem, index)">
+        <span class="removeBtn" v-on:click="removeTodo({todoItem, index})">
           <i class="fas fa-trash-alt"></i>
         </span>
       </li>
-    </ul>
+    </transition-group>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapMutations } from "vuex";
+
 export default {
-  props: ["prosdata"],
   methods: {
-    removeTodo: function(todoItem, index) {
-      this.$emit("removeItem", todoItem, index);
-    },
-    toggleComplete: function(todoItem, index) {
-      this.$emit("toggleItem", todoItem, index);
+    ...mapMutations({
+      removeTodo: "removeOneItem"
+    }),
+    toggleComplete(todoItem, index) {
+      // this.$emit("toggleItem", todoItem, index);
+      this.$store.commit("toggleOneItem", { todoItem, index });
     }
+  },
+  computed: {
+    // todoItems() {
+    //   return this.$store.getters.storedTodoItems;
+    // }
+    ...mapGetters(["storedTodoItems"])
+    // ...mapGetters({
+    //   todoItems: "storedTodoItems"
+    // })
   }
 };
 </script>
@@ -62,5 +77,20 @@ li {
 .removBtn {
   margin-left: auto;
   color: #de4343;
+}
+
+/* 리스트 아이템 트랜지션*/
+.list-item {
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-enter-active,
+.list-leave-active {
+  transition: all 1s;
+}
+.list-enter,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
 }
 </style>
